@@ -17,9 +17,11 @@ load_dotenv()
 # 使用するデバイス（GPU）を指定
 device = "cuda"
 # 入力となる音声ファイルのパスを指定
-audio_file = "devon.mp3"
+audio_file = (
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/0b10fe56c17e068fcca9ef0d470e6800.wav"
+)
 # バッチサイズを指定（GPUメモリが不足している場合は数を減らす）
-batch_size = 16
+batch_size = 8
 # 計算の精度を指定（GPUメモリが不足している場合は"int8"に変更可能、ただし精度は低下する可能性あり）
 compute_type = "float16"
 # Hugging Faceの認証トークンを指定
@@ -49,7 +51,11 @@ diarize_segments = diarize_model(audio_file)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
 # 結果をテキストファイルに保存する
-with open("result.txt", "w", encoding="utf-8") as f:
+with open(
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/0b10fe56c17e068fcca9ef0d470e6800.txt",
+    "w",
+    encoding="utf-8",
+) as f:
     # 各セグメントの情報を処理しながらファイルに書き込む
     for segment in tqdm(result["segments"], desc="Processing segments", ncols=75):
         # セグメントの開始時間を取得して文字列に変換
