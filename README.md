@@ -24,3 +24,7 @@ whisper310               /mnt/kiso-qnap3/yuabe/m1/anaconda3/envs/whisper310
 NAS上にはpip install whisperxができなかったので，~/envs/whisperx-v3 に作った．
 💡
 g23 でしか作業できない！！
+
+(追記)
+この後失敗したので，使わなくなりました．．
+原因は多分nvccコマンドが使えないことかなと．．
