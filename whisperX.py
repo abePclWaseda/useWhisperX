@@ -37,11 +37,19 @@ output_path = Path(
 )
 output_path.parent.mkdir(parents=True, exist_ok=True)
 
-with output_path.open("w", encoding="utf-8") as f:
-    for segment in result["segments"]:
-        for word_info in segment["words"]:
-            w = word_info["word"]
-            start = word_info["start"]
-            end = word_info["end"]
-            spkr = word_info.get("speaker", segment.get("speaker", "UNK"))
-            f.write(f"{start:.3f}-{end:.3f}\t{spkr}\t{w}\n")
+with output_path.open(
+    "w",
+    encoding="utf-8",
+) as f:
+    for segment in tqdm(result["segments"], desc="Processing segments", ncols=75):
+        start_time = str(timedelta(seconds=segment["start"]))
+        end_time = str(timedelta(seconds=segment["end"]))
+        speaker = segment["speaker"]
+        text = segment["text"]
+        f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
+        # for w in segment["words"]:  # まずは，30秒単位で．
+        #     start_time = str(timedelta(seconds=w["start"]))
+        #     end_time = str(timedelta(seconds=w["end"]))
+        #     speaker = w.get("speaker", "UNK")
+        #     text = w["word"]
+        #     f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
