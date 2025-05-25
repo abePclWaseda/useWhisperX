@@ -42,9 +42,14 @@ with output_path.open(
     encoding="utf-8",
 ) as f:
     for segment in tqdm(result["segments"], desc="Processing segments", ncols=75):
-        for w in segment["words"]:
-            start_time = str(timedelta(seconds=w["start"]))
-            end_time = str(timedelta(seconds=w["end"]))
-            speaker = w.get("speaker", "UNK")
-            text = w["word"]
-            f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
+        start_time = str(timedelta(seconds=segment["start"]))
+        end_time = str(timedelta(seconds=segment["end"]))
+        speaker = segment["speaker"]
+        text = segment["text"]
+        f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
+        # for w in segment["words"]:  # まずは，30秒単位で．
+        #     start_time = str(timedelta(seconds=w["start"]))
+        #     end_time = str(timedelta(seconds=w["end"]))
+        #     speaker = w.get("speaker", "UNK")
+        #     text = w["word"]
+        #     f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
