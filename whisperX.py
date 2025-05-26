@@ -5,6 +5,7 @@ from tqdm import tqdm
 import whisperx.diarize
 from dotenv import load_dotenv
 import os
+import json
 
 load_dotenv()
 
@@ -37,19 +38,24 @@ output_path = Path(
 )
 output_path.parent.mkdir(parents=True, exist_ok=True)
 
-with output_path.open(
-    "w",
-    encoding="utf-8",
-) as f:
-    for segment in tqdm(result["segments"], desc="Processing segments", ncols=75):
-        start_time = str(timedelta(seconds=segment["start"]))
-        end_time = str(timedelta(seconds=segment["end"]))
-        speaker = segment["speaker"]
-        text = segment["text"]
-        f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
-        # for w in segment["words"]:  # まずは，30秒単位で．
-        #     start_time = str(timedelta(seconds=w["start"]))
-        #     end_time = str(timedelta(seconds=w["end"]))
-        #     speaker = w.get("speaker", "UNK")
-        #     text = w["word"]
-        #     f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
+json_path = output_path.with_suffix(".json")
+
+with json_path.open("w", encoding="utf-8") as jf:
+    json.dump(result["segments"], jf, ensure_ascii=False, indent=2)
+
+# with output_path.open(
+#     "w",
+#     encoding="utf-8",
+# ) as f:
+#     for segment in tqdm(result["segments"], desc="Processing segments", ncols=75):
+#         start_time = str(timedelta(seconds=segment["start"]))
+#         end_time = str(timedelta(seconds=segment["end"]))
+#         speaker = segment["speaker"]
+#         text = segment["text"]
+#         f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
+# for w in segment["words"]:  # まずは，30秒単位で．
+#     start_time = str(timedelta(seconds=w["start"]))
+#     end_time = str(timedelta(seconds=w["end"]))
+#     speaker = w.get("speaker", "UNK")
+#     text = w["word"]
+#     f.write(f"{start_time}-{end_time}\n{speaker}\n{text}\n\n")
