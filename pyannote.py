@@ -16,10 +16,10 @@ import torch
 pipeline.to(torch.device("cuda"))
 
 diarization = pipeline(
-    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/audio/0b10fe56c17e068fcca9ef0d470e6800.wav"
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/audio/0b10fe56c17e068fcca9ef0d470e6800_first30s.wav"
 )
 
-with open("/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/sample.rttm", "w") as f:
+with open("/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/sample_first30s.rttm", "w") as f:
     diarization.write_rttm(f)
 
 print(diarization)
