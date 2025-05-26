@@ -14,7 +14,7 @@ batch_size = 16
 compute_type = "float16"
 auth_token = os.getenv("HUGGINGFACE_AUTH_TOKEN")
 
-model = whisperx.load_model("tiny", device, compute_type=compute_type)
+model = whisperx.load_model("large-v2", device, compute_type=compute_type)
 audio = whisperx.load_audio(audio_file)
 result = model.transcribe(audio, batch_size=batch_size)
 
@@ -27,13 +27,13 @@ result = whisperx.align(
 )
 
 diarize_model = whisperx.diarize.DiarizationPipeline(
-    use_auth_token=auth_token, device="cpu"
+    use_auth_token=auth_token, device=device
 )
 diarize_segments = diarize_model(audio_file)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
 output_path = Path(
-    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/0b10fe56c17e068fcca9ef0d470e6800.txt"
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/0b10fe56c17e068fcca9ef0d470e6800_large.txt"
 )
 output_path.parent.mkdir(parents=True, exist_ok=True)
 
