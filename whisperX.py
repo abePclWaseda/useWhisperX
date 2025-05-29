@@ -10,7 +10,7 @@ import json
 load_dotenv()
 
 device = "cuda"
-audio_file = "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/audio/0b10fe56c17e068fcca9ef0d470e6800.wav"
+audio_file = "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/audio/15f97caafef4a4b352e54781236cf2b4.wav"
 batch_size = 16
 compute_type = "float16"
 auth_token = os.getenv("HUGGINGFACE_AUTH_TOKEN")
@@ -33,12 +33,12 @@ diarize_model = whisperx.diarize.DiarizationPipeline(
 diarize_segments = diarize_model(audio_file)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
-output_path = Path(
-    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/0b10fe56c17e068fcca9ef0d470e6800_large.txt"
+json_path = Path(
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/json/15f97caafef4a4b352e54781236cf2b4.json"
 )
-output_path.parent.mkdir(parents=True, exist_ok=True)
+json_path.parent.mkdir(parents=True, exist_ok=True)
 
-json_path = output_path.with_suffix(".json")
+# json_path = output_path.with_suffix(".json")
 
 with json_path.open("w", encoding="utf-8") as jf:
     json.dump(result["segments"], jf, ensure_ascii=False, indent=2)
