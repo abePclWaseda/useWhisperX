@@ -10,7 +10,8 @@ import json
 load_dotenv()
 
 device = "cuda"
-audio_file = "/mnt/work-qnap/llmc/J-CHAT/audio/podcast_test/00000-of-00001/cuts.000000/0b97ffd9f7301b55323c65254a94a742.wav"
+# audio_file = "/mnt/work-qnap/llmc/J-CHAT/audio/podcast_test/00000-of-00001/cuts.000000/0b97ffd9f7301b55323c65254a94a742.wav"
+audio_file = "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/audio/separated_stereo.wav"
 batch_size = 16
 compute_type = "float16"
 auth_token = os.getenv("HUGGINGFACE_AUTH_TOKEN")
@@ -34,7 +35,7 @@ diarize_segments = diarize_model(audio_file)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
 json_path = Path(
-    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/json/0b97ffd9f7301b55323c65254a94a742.json"
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/json/separated_stereo.json"
 )
 json_path.parent.mkdir(parents=True, exist_ok=True)
 
