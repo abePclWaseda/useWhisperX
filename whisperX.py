@@ -41,8 +41,27 @@ json_path.parent.mkdir(parents=True, exist_ok=True)
 
 # json_path = output_path.with_suffix(".json")
 
+# スピーカーマッピング辞書
+speaker_map = {
+    "SPEAKER_00": "A",
+    "SPEAKER_01": "B",
+    # 必要に応じて追加
+}
+
+# 整形処理
+formatted = []
+for segment in result["segments"]: # json_load：リスト
+    for w in segment["words"]: # segment['words']：リスト
+        speaker = speaker_map.get(w.get("speaker", ""), "Unknown")
+        formatted.append({
+            "speaker": speaker,
+            "word": w["word"],
+            "start": w["start"],
+            "end": w["end"]
+        })
+
 with json_path.open("w", encoding="utf-8") as jf:
-    json.dump(result["segments"], jf, ensure_ascii=False, indent=2)
+    json.dump(formatted, jf, ensure_ascii=False, indent=2)
 
 # with output_path.open(
 #     "w",
