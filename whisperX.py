@@ -51,8 +51,9 @@ speaker_map = {
 # 整形処理
 formatted = []
 for segment in result["segments"]: # json_load：リスト
+    backup_speaker = segment["speaker"]
     for w in segment["words"]: # segment['words']：リスト
-        speaker = speaker_map.get(w.get("speaker", ""), "Unknown")
+        speaker = speaker_map.get(w.get("speaker", backup_speaker), "Unknown")
         formatted.append({
             "speaker": speaker,
             "word": w["word"],
