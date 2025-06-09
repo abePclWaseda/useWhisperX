@@ -31,11 +31,11 @@ result = whisperx.align(
 diarize_model = whisperx.diarize.DiarizationPipeline(
     use_auth_token=auth_token, device=device
 )
-diarize_segments = diarize_model(audio_file)
+diarize_segments = diarize_model(audio_file, num_speakers=2)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
 json_path = Path(
-    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/json/separated_stereo.json"
+    "/mnt/kiso-qnap3/yuabe/m1/useWhisperX/data/json/separated_stereo2.json"
 )
 json_path.parent.mkdir(parents=True, exist_ok=True)
 
