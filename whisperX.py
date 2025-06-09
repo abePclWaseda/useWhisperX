@@ -62,7 +62,15 @@ for segment in result["segments"]: # json_load：リスト
         })
 
 with json_path.open("w", encoding="utf-8") as jf:
-    json.dump(formatted, jf, ensure_ascii=False, indent=2)
+    jf.write("[\n")
+    for i, entry in enumerate(formatted):
+        jf.write("    ") 
+        json.dump(entry, jf, ensure_ascii=False)
+        if i != len(formatted) - 1:
+            jf.write(",\n")
+        else:
+            jf.write("\n")
+    jf.write("]\n")
 
 # with output_path.open(
 #     "w",
