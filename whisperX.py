@@ -30,7 +30,7 @@ for file in tqdm(sorted(os.listdir(input_dir))):
     audio = whisperx.load_audio(audio_path)
 
     # 1. 音声認識
-    result = model.transcribe(audio, batch_size=batch_size)
+    result = model.transcribe(audio, batch_size=batch_size, language="ja")
 
     # 2. アライメント
     model_a, metadata = whisperx.load_align_model(result["language"], device)
