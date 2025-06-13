@@ -16,7 +16,7 @@ auth_token = os.getenv("HUGGINGFACE_AUTH_TOKEN")
 
 # 入出力ディレクトリ
 file = "/mnt/kiso-qnap3/yuabe/m1/useAsteroid/data/J-CHAT/audio/podcast_test/00000-of-00001/cuts.000000/dcdd979f47cb788aeb8ef58033d37fff.wav"
-json_path = "/mnt/kiso-qnap3/yuabe/m1/useReazonSpeech/data/text/result.json"
+json_path = "/mnt/kiso-qnap3/yuabe/m1/useReazonSpeech/data/text/dcdd979f47cb788aeb8ef58033d37fff_nemo.json"
 
 # JSONをロードしてsegmentsを取得
 with open(json_path, "r", encoding="utf-8") as f:
@@ -62,29 +62,29 @@ speaker_map = {
 
 formatted = []
 for segment in result["segments"]:
-    speaker = speaker_map.get(segment.get("speaker"), "Unknown")
-    formatted.append(
-        {
-            "speaker": speaker,
-            "word": segment["text"],
-            "start": segment["start"],
-            "end": segment["end"],
-        }
-    )
-    # backup_speaker = segment.get("speaker", "Unknown")
-    # for w in segment.get("words", []):
-    #     speaker = speaker_map.get(w.get("speaker", backup_speaker), "Unknown")
-    #     formatted.append(
-    #         {
-    #             "speaker": speaker,
-    #             "word": w["word"],
-    #             "start": w["start"],
-    #             "end": w["end"],
-    #         }
-    #     )
+    # speaker = speaker_map.get(segment.get("speaker"), "Unknown")
+    # formatted.append(
+    #     {
+    #         "speaker": speaker,
+    #         "word": segment["text"],
+    #         "start": segment["start"],
+    #         "end": segment["end"],
+    #     }
+    # )
+    backup_speaker = segment.get("speaker", "Unknown")
+    for w in segment.get("words", []):
+        speaker = speaker_map.get(w.get("speaker", backup_speaker), "Unknown")
+        formatted.append(
+            {
+                "speaker": speaker,
+                "word": w["word"],
+                "start": w["start"],
+                "end": w["end"],
+            }
+        )
 
 # # 出力ファイル名
-json_path = Path("data/text/dcdd979f47cb788aeb8ef58033d37fff_reazon2.json")
+json_path = Path("data/text/dcdd979f47cb788aeb8ef58033d37fff_reazon_nemo.json")
 with json_path.open("w", encoding="utf-8") as jf:
     jf.write("[\n")
     for i, entry in enumerate(formatted):
