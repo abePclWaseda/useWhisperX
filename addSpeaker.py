@@ -41,8 +41,8 @@ result = whisperx.align(
     return_char_alignments=False,
 )
 
-with open("data/text/result_align_reazon.json", "w", encoding="utf-8") as f:
-    json.dump(result, f, ensure_ascii=False, indent=2)
+# with open("data/text/result_align_reazon.json", "w", encoding="utf-8") as f:
+#     json.dump(result, f, ensure_ascii=False, indent=2)
 
 # 3. 話者分離
 diarize_model = whisperx.diarize.DiarizationPipeline(
@@ -51,35 +51,44 @@ diarize_model = whisperx.diarize.DiarizationPipeline(
 diarize_segments = diarize_model(audio_path)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
-with open("data/text/result_diarize_reazon.json", "w", encoding="utf-8") as f:
-    json.dump(result, f, ensure_ascii=False, indent=2)
+# with open("data/text/result_diarize_reazon.json", "w", encoding="utf-8") as f:
+#     json.dump(result, f, ensure_ascii=False, indent=2)
 
 # # 4. 整形＆保存
-# speaker_map = {
-#     "SPEAKER_00": "A",
-#     "SPEAKER_01": "B",
-# }
+speaker_map = {
+    "SPEAKER_00": "A",
+    "SPEAKER_01": "B",
+}
 
-# formatted = []
-# for segment in result["segments"]:
-#     backup_speaker = segment.get("speaker", "Unknown")
-#     for w in segment.get("words", []):
-#         speaker = speaker_map.get(w.get("speaker", backup_speaker), "Unknown")
-#         formatted.append(
-#             {
-#                 "speaker": speaker,
-#                 "word": w["word"],
-#                 "start": w["start"],
-#                 "end": w["end"],
-#             }
-#         )
+formatted = []
+for segment in result["segments"]:
+    # speaker = speaker_map.get(segment.get("speaker"), "Unknown")
+    # formatted.append(
+    #     {
+    #         "speaker": speaker,
+    #         "word": segment["text"],
+    #         "start": segment["start"],
+    #         "end": segment["end"],
+    #     }
+    # )
+    backup_speaker = segment.get("speaker", "Unknown")
+    for w in segment.get("words", []):
+        speaker = speaker_map.get(w.get("speaker", backup_speaker), "Unknown")
+        formatted.append(
+            {
+                "speaker": speaker,
+                "word": w["word"],
+                "start": w["start"],
+                "end": w["end"],
+            }
+        )
 
 # # 出力ファイル名
-# json_path = Path(output_dir) / f"{Path(file).stem}.json"
-# with json_path.open("w", encoding="utf-8") as jf:
-#     jf.write("[\n")
-#     for i, entry in enumerate(formatted):
-#         jf.write("    ")
-#         json.dump(entry, jf, ensure_ascii=False)
-#         jf.write(",\n" if i != len(formatted) - 1 else "\n")
-#     jf.write("]\n")
+json_path = Path("data/text/dcdd979f47cb788aeb8ef58033d37fff_reazon.json")
+with json_path.open("w", encoding="utf-8") as jf:
+    jf.write("[\n")
+    for i, entry in enumerate(formatted):
+        jf.write("    ")
+        json.dump(entry, jf, ensure_ascii=False)
+        jf.write(",\n" if i != len(formatted) - 1 else "\n")
+    jf.write("]\n")
