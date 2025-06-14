@@ -15,7 +15,7 @@ batch_size = 16
 auth_token = os.getenv("HUGGINGFACE_AUTH_TOKEN")
 
 # 入出力ディレクトリ
-file = "/mnt/kiso-qnap3/yuabe/m1/useAsteroid/data/J-CHAT/audio/podcast_test/00000-of-00001/cuts.000000/dcdd979f47cb788aeb8ef58033d37fff.wav"
+file = "/mnt/work-qnap/llmc/J-CHAT/audio/podcast_test/00000-of-00001/cuts.000000/52a89d2d9aab22588117a6b8599add47.wav"
 output_dir = "data/json"
 os.makedirs(output_dir, exist_ok=True)
 
@@ -49,10 +49,10 @@ with open("data/text/result_align.json", "w", encoding="utf-8") as f:
 diarize_model = whisperx.diarize.DiarizationPipeline(
     use_auth_token=auth_token, device=device
 )
-diarize_segments = diarize_model(audio_path)
+diarize_segments = diarize_model(audio_path, num_speakers=2)
 result = whisperx.assign_word_speakers(diarize_segments, result)
 
-with open("data/text/result_diarize.json", "w", encoding="utf-8") as f:
+with open("data/text/result_kakuninn.json", "w", encoding="utf-8") as f:
     json.dump(result, f, ensure_ascii=False, indent=2)
 
 # # 4. 整形＆保存

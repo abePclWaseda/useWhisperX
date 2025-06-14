@@ -34,6 +34,9 @@ speaker_map = {
     "SPEAKER_01": "B",
 }
 
+# 話者分離失敗ファイルを記録
+failed_files = []
+
 # ファイルごとに処理
 for wav_path in tqdm(sorted(wav_dir.glob("*.wav"))):
     base_name = wav_path.stem
@@ -42,6 +45,7 @@ for wav_path in tqdm(sorted(wav_dir.glob("*.wav"))):
 
     if not json_path.exists():
         print(f"[!] JSON not found for {base_name}, skipping.")
+        failed_files.append(wav_path.name)
         continue
 
     try:
@@ -65,7 +69,14 @@ for wav_path in tqdm(sorted(wav_dir.glob("*.wav"))):
 
         # 話者分離
         diarize_segments = diarize_model(str(wav_path), num_speakers=2)
-        result = whisperx.assign_word_speakers(diarize_segments, aligned_result)
+
+        # 話者割当て
+        if aligned_result.get("segments") and not diarize_segments.empty:
+            result = whisperx.assign_word_speakers(diarize_segments, aligned_result)
+        else:
+            print(f"[SKIP] No valid segments or diarization output for {wav_path.name}")
+            failed_files.append(wav_path.name)
+            continue
 
         # 整形
         formatted = []
@@ -88,3 +99,15 @@ for wav_path in tqdm(sorted(wav_dir.glob("*.wav"))):
 
     except Exception as e:
         print(f"[ERROR] Failed to process {base_name}: {e}")
+        failed_files.append(wav_path.name)
+        continue
+
+# ログファイル出力
+log_path = Path("failed_speaker_assignment.txt")
+with log_path.open("w", encoding="utf-8") as log_file:
+    for fname in failed_files:
+        log_file.write(f"{fname}\n")
+
+print(
+    f"[INFO] {len(failed_files)} files failed speaker assignment. Log saved to {log_path}"
+)
