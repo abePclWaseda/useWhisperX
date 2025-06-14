@@ -18,7 +18,9 @@ wav_dir = Path(
     "/mnt/work-qnap/llmc/J-CHAT/audio/podcast_test/00000-of-00001/cuts.000000"
 )
 json_nemo_dir = Path("/mnt/kiso-qnap3/yuabe/m1/useReazonSpeech/data/text_nemo")
-output_dir = Path("data/text_nemo_whisperx")
+output_dir = Path(
+    "/mnt/kiso-qnap3/yuabe/m1/moshi-finetune/data/J-CHAT/text/podcast_test/00000-of-00001/cuts.000000"
+)
 output_dir.mkdir(parents=True, exist_ok=True)
 
 # Whisper モデルとアライメントモデルを事前ロード
@@ -70,11 +72,16 @@ for wav_path in tqdm(sorted(wav_dir.glob("*.wav"))):
         # 話者分離
         diarize_segments = diarize_model(str(wav_path), num_speakers=2)
 
-        # 話者割当て
-        if aligned_result.get("segments") and not diarize_segments.empty:
-            result = whisperx.assign_word_speakers(diarize_segments, aligned_result)
-        else:
-            print(f"[SKIP] No valid segments or diarization output for {wav_path.name}")
+        # (1) 話者が 2 つ検出されたか？
+        if diarize_segments["speaker"].nunique() != 2:
+            print(f"[SKIP] Detected speakers ≠ 2 for {wav_path.name}")
+            failed_files.append(wav_path.name)
+            continue
+
+        # (2) 話者割当て
+        result = whisperx.assign_word_speakers(diarize_segments, aligned_result)
+        if not result or not result.get("segments"):
+            print(f"[SKIP] Speaker assignment empty for {wav_path.name}")
             failed_files.append(wav_path.name)
             continue
 
@@ -93,9 +100,23 @@ for wav_path in tqdm(sorted(wav_dir.glob("*.wav"))):
                     }
                 )
 
+        speakers_in_file = {item["speaker"] for item in formatted}
+        if speakers_in_file != {"A", "B"}:
+            print(f"[SKIP] Only {speakers_in_file} detected in {wav_path.name}")
+            failed_files.append(wav_path.name)
+            continue
         # 保存
         with output_path.open("w", encoding="utf-8") as jf:
-            json.dump(formatted, jf, ensure_ascii=False, indent=2)
+            # 1 行 JSON 文字列をリスト化
+            indent = "  "  # ← ここを変えればタブや 2 文字分も可
+            json_lines = [
+                indent + json.dumps(obj, ensure_ascii=False) for obj in formatted
+            ]
+
+            # [] 付きで書き込む
+            jf.write("[\n")
+            jf.write(",\n".join(json_lines))
+            jf.write("\n]")
 
     except Exception as e:
         print(f"[ERROR] Failed to process {base_name}: {e}")
